@@ -8,6 +8,14 @@
 <h1>${question}</h1>
 </div>
 
+<c:if test="${not empty question.answers}">
+<ul>
+<c:forEach var="answer" items="${question.answers}">
+	<li>${answer}</li>
+</c:forEach>
+</ul>
+</c:if>
+
 <security:authorize access="hasRole('ROLE_EDITOR')">
 <p>
 	<a href="<c:url value='/questions/${question.id}/edit'/>">Edit</a>

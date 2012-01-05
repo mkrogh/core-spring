@@ -15,7 +15,7 @@
 	          <ul class="nav">
 	            <li class="active"><a href="<c:url value="/" />">Home</a></li>
 	            <li><a href="<c:url value="/questions" />">Questions</a></li>
-	            <li><a href="<c:url value="/questions/new" />">New</a></li>
+	            <security:authorize access="isAuthenticated()"><li><a href="<c:url value="/questions/new" />">New</a></li></security:authorize>
 	          </ul>
 	          <security:authorize access="isAnonymous()">
 	          <form action="<c:url value='/j_spring_security_check'/>" method="post" class="pull-right">
