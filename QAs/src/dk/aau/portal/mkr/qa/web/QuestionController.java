@@ -48,7 +48,7 @@ validateQuestion(question, bindingResult);
 	}
 	
 	@RequestMapping(value="/questions/{id}", method=RequestMethod.GET)
-	public String showQuestion(@PathVariable int id, Model model){
+	public String showQuestion(@PathVariable("id") int id, Model model){
 		model.addAttribute("question", questionRepository.findQuestion(id));
 		return "question";
 	}
@@ -67,7 +67,7 @@ validateQuestion(question, bindingResult);
 	}
 	
 	@RequestMapping(value="/questions/{id}/destroy", method=RequestMethod.POST)
-	public String destroyQuestion(@PathVariable int id){
+	public String destroyQuestion(@PathVariable("id") int id){
 		Question question = questionRepository.findQuestion(id);
 		questionRepository.destroy(question);
 		return "redirect:/questions";
@@ -80,7 +80,7 @@ validateQuestion(question, bindingResult);
 	}
 	
 	@RequestMapping(value="/questions/{id}/edit", method=RequestMethod.GET)
-	public String editQuestion(@PathVariable int id, Model model){
+	public String editQuestion(@PathVariable("id") int id, Model model){
 		model.addAttribute("question", questionRepository.findQuestion(id));
 		return "editQuestion";
 	}
