@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 	
 	<!-- Root Context: defines shared resources visible to all other web components -->
-		
+	<bean id="questionRepository" class="dk.aau.portal.mkr.qa.internal.JdbcQuestionRepository">
+	</bean>	
+	
+	<import resource="security-config.xml"/>
+	
+	<context:annotation-config/>
+	
+	
+	<!-- Creates an in-memory "rewards" database populated with test data for fast testing -->
+	<jdbc:embedded-database id="dataSource">
+		<jdbc:script location="classpath:dk/aau/portal/mkr/qa/testdb/schema.sql"/>
+		<jdbc:script location="classpath:dk/aau/portal/mkr/qa/testdb/test-data.sql"/>
+	</jdbc:embedded-database>
 </beans>

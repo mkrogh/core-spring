@@ -1,14 +1,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page session="false" %>
-<html>
-<head>
-	<title>Home</title>
-</head>
-<body>
+<c:import url="/WEB-INF/views/layout/top.jsp" />
+
+<div class="page-header">
 <h1>
 	Hello world!  
 </h1>
-
+</div>
 <P>  The time on the server is ${serverTime}. </P>
-</body>
-</html>
+
+<c:import url="/WEB-INF/views/layout/bottom.jsp" />

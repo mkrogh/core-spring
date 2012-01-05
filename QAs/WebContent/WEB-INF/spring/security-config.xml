@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<security:http  use-expressions="true">
+		<security:form-login login-page="/login" authentication-failure-url="/login?login_error=true" />
+		<security:access-denied-handler error-page="/denied"/>
+		<security:intercept-url pattern="/questions/*/edit"
+			access="hasRole('ROLE_EDITOR')" />
+		<security:intercept-url pattern="/questions/*/destroy"
+			access="hasRole('ROLE_EDITOR')" />
+		<security:intercept-url pattern="/questions/new"
+			access="hasAnyRole('ROLE_EDITOR')" />
+		<security:logout/>
+	</security:http>
+	 <security:authentication-manager>
+		<security:authentication-provider>
+			<security:password-encoder hash="md5">
+				<security:salt-source system-wide="MySalt"/>
+			</security:password-encoder>
+			<security:user-service properties="/WEB-INF/users.properties"  />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+</beans>
