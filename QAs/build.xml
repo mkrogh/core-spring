@@ -1,0 +1,181 @@
+<project name="QAs" default="dist" basedir=".">
+	<description>
+    A Question and Answers spring greenfield project.
+	</description>
+
+  <property name="version.major" value="0"/>
+	<property name="version.minor" value="2"/>
+	<property name="version.revision" value="1"/>
+	<property name="project.fullname" value="${ant.project.name}-${version.major}.${version.minor}"/>
+	<property name="scm.url" value="https://github.com/mkrogh/core-spring"/>
+
+	<property name="src.dir" location="${basedir}/src" />
+	<property name="build.dir" location="${basedir}/ant-build" />
+  <property name="webapp.dir" location="${basedir}/WebContent" />
+	<property name="lib.dir" location="${webapp.dir}/WEB-INF/lib" />
+	<property name="dist.dir" location="${basedir}/dist" />
+	<property name="doc.dir" location="${basedir}/doc" />
+	<property name="test.dir" location="${basedir}/test" />
+	<property name="test.build.dir" location="${basedir}/test-build" />
+	<property name="junit.doc.dir" location="${basedir}/junit" />
+  <property name="webxml.file" location="${webapp.dir}/WEB-INF/web.xml" />
+
+  <property name="required.java.version" value="1.6" />
+
+	<tstamp>
+		<format property="year" pattern="yyyy" />
+		<format property="today" pattern="yyyy-mm-dd" />
+	</tstamp>
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement location="${build.dir}" />
+	</path>
+
+
+  <!-- ================================= 
+          target: clean              
+         ================================= -->
+	<target name="clean" depends="-cleanbuild, -cleandist, -cleandoc, -cleanjunit, -clean-test-build" description="--> clean project" />
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: -cleanbuild                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="-cleanbuild">
+		<delete dir="${build.dir}" />
+	</target>
+        
+        <!-- - - - - - - - - - - - - - - - - - 
+          target: -clean-test-build                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="-clean-test-build">
+		<delete dir="${test.build.dir}" />
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: -cleandist                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="-cleandist">
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: -cleandoc                     
+         - - - - - - - - - - - - - - - - - -->
+	<target name="-cleandoc">
+		<delete dir="${doc.dir}" />
+	</target>
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: -cleanjunit                     
+         - - - - - - - - - - - - - - - - - -->
+	<target name="-cleanjunit">
+		<delete dir="${junit.doc.dir}" />
+	</target>
+
+  <!-- ================================= 
+          target: javadoc              
+         ================================= -->
+	<target name="javadoc" depends="-cleandoc" description="--> generate Javadoc">
+		<mkdir dir="${doc.dir}" />
+		<javadoc sourcepath="${src.dir}" 
+				destdir="${doc.dir}" 
+				doctitle="${project.fullname}" 
+				windowtitle="${project.fullname}" 
+				author="true" 
+				packagenames="*" 
+				bottom="Copyright (c) ${year} Aalborg University" 
+				version="true" 
+				use="true" 
+				source="${required.java.version}">
+			<classpath refid="classpath" />
+		</javadoc>
+	</target>
+
+
+  <!-- ================================= 
+          target: compile              
+         ================================= -->
+    <target name="compile" depends="-cleanbuild" description="--> compile">
+        <mkdir dir="${build.dir}"/>
+        <javac classpathref="classpath" 
+            destdir="${build.dir}" 
+            source="${required.java.version}"
+            target="${required.java.version}" 
+            encoding="UTF-8"
+            includeAntRuntime="false">
+            <src path="${src.dir}" />
+        </javac>
+        <!-- Copy all non java files over -->
+        <copy todir="${build.dir}">
+            <fileset dir="${src.dir}" excludes="**/*.java"/>
+        </copy>
+    </target>
+
+    <!-- ================================= 
+          target: test-compile              
+         ================================= -->
+  <target name="-compile-test" depends="-clean-test-build, compile" description="--> compile">
+       <mkdir dir="${test.build.dir}"/>
+       <javac classpathref="classpath" 
+           destdir="${test.build.dir}" 
+           source="${required.java.version}"
+           target="${required.java.version}" 
+           encoding="UTF-8"
+           includeAntRuntime="false">
+           <src path="${test.dir}" />
+       </javac>
+   </target>
+
+  <!-- ================================= 
+          target: war              
+         ================================= -->
+	<target name="war" depends="-cleandist, compile" description="--> build .war file">
+		<mkdir dir="${dist.dir}" />
+		<war destfile="${dist.dir}/${ant.project.name}.war" webxml="${webxml.file}" duplicate="fail">
+			<manifest>
+				<!-- Who is building this war? -->
+				<attribute name="Built-By" value="${user.name}" />
+				<!-- Information about the program itself -->
+				<attribute name="Implementation-Vendor" value="AAU Portal Team (http://portal.aau.dk)" />
+				<attribute name="Implementation-Title" value="${ant.project.name}" />
+				<attribute name="Implementation-URL" value="${scm.url}" />
+				<attribute name="Implementation-Version" value="${version.major}.${version.minor}.${version.revision}" />
+			</manifest>
+
+			<fileset dir="${webapp.dir}">
+			</fileset>
+
+			<classes dir="${build.dir}" />
+			
+			<!--<lib file="${lib.dir}/*.jar" />-->
+		</war>
+	</target>
+
+    <!-- =================================
+       target: test
+    ================================= -->
+	<target name="test" depends="-cleanjunit, compile, -compile-test" description="--> run JUnit tests">
+		<mkdir dir="${junit.doc.dir}" />
+		<junit fork="no" haltonfailure="no" printsummary="yes">
+			<formatter type="xml" />
+			<classpath refid="classpath" />
+			<classpath>
+        			<pathelement location="${test.build.dir}" />
+                        </classpath>
+			<batchtest todir="${junit.doc.dir}">
+				<fileset dir="${test.dir}">
+					<include name="**/AllTests.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+  <!-- ================================= 
+	          target: dist              
+	     ================================= -->
+	<target name="dist" depends="war" description="--> build project" />
+
+</project>

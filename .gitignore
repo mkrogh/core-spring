@@ -6,4 +6,10 @@
 *.ear
 
 # Eclipse #
-build/ 
+build/
+
+# Ant #
+ant-build/
+dist/
+junit/
+test-build/
